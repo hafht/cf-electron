@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});require("reflect-metadata");const e=()=>({name:"ElectronApp Update",version:"1.0.1",description:"ElectronApp Update",author:"Creative Force",license:"Creative Force",homepage:"Creative Force Update"});exports.createElectronApp=e;

@@ -1,0 +1,41 @@
+{
+  "name": "@creative-force/electron",
+  "version": "0.1.0",
+  "private": false,
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "prepublishOnly": "pnpm build",
+    "link": "node scripts/link-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron",
+    "unlink": "node scripts/unlink-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+ 
+  "dependencies": {
+    "inversify": "^6.0.2",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vite-plugin-dts": "^3.9.0",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^5.0.0",
+    "electron-updater": "^6.3.9"
+  }
+}
