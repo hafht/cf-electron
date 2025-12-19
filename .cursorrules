@@ -1,0 +1,50 @@
+# CF-Electron Framework - Cursor Instructions
+
+## Project Overview
+This is an internal Electron framework (`@creative-force/electron`) that serves as the foundation for Creative Force desktop applications. It standardizes Electron main process, module lifecycle, and provides dependency injection infrastructure.
+
+## Documentation Location
+All project documentation, engineering notes, and instructions are located in the `docs/` directory:
+
+- `docs/README.md` - **Start here**: Index and guide to all documentation
+- `docs/OVERVIEW.md` - High-level architecture, principles, and project structure
+- `docs/MODULE-*.md` - Module-specific documentation and implementation notes
+  - `docs/MODULE-0.1-NOTES.md` - App Bootstrap & Lifecycle module documentation
+
+**IMPORTANT**: Always read relevant documentation in `docs/` before making changes or answering questions about the framework. Start with `docs/README.md` for an overview of available documentation.
+
+## Key Principles
+1. **Framework ≠ App**: Framework manages lifecycle and infrastructure, apps only compose modules
+2. **Clear Boundaries**: App doesn't call Electron lifecycle directly, doesn't know DI implementation details
+3. **Module-based**: Everything is a module with `register()`, `start()`, and `stop()` lifecycle
+4. **Dependency Injection**: Uses Inversify for DI container
+
+## Architecture
+- **Entry Point**: `src/index.ts` exports `createElectronApp()`
+- **Core**: `src/app/` - App bootstrap, lifecycle management, types
+- **DI**: `src/di/` - Dependency injection container setup
+- **Build**: Vite builds to CommonJS in `dist/`
+
+## Module Lifecycle
+1. `createElectronApp()` is called
+2. DI container is created
+3. All modules call `register(container)` synchronously
+4. Electron `app.whenReady()` fires
+5. All modules call `start()` in order
+6. On quit, modules call `stop()` in reverse order
+
+## Development Guidelines
+- Don't modify completed modules unless necessary
+- Follow module documentation in `docs/` for new features
+- Write docs alongside code
+- New modules must be usable immediately with examples
+- Maintain good DX (Developer Experience)
+
+## When Answering Questions or Making Changes
+1. **First**: Check `docs/README.md` for documentation index and navigation
+2. **Then**: Check `docs/OVERVIEW.md` for architecture context
+3. **Next**: Check relevant `docs/MODULE-*.md` for specific module details
+4. **Finally**: Review source code in `src/` to understand implementation
+
+Always reference documentation when explaining concepts or making architectural decisions.
+
