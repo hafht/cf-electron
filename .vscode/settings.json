@@ -1,0 +1,15 @@
+{
+    // Exclude files from formatting
+    "files.exclude": {
+        // node_modules
+        "node_modules": true,
+        // dist
+        "dist": false,
+        // build
+        "build": true,
+        // .git
+        ".git": true,
+        // .gitignore
+        ".gitignore": true,
+    }
+}

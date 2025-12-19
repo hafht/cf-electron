@@ -7,20 +7,20 @@ import { CreateAppOptions } from './types';
 export async function createElectronApp(options: CreateAppOptions) {
    const {appId, modules = []} = options;
    if (!appId) {
-    throw new Error('[ElectronCore] appId is required');
+    throw new Error('[electron-core] appId is required');
    }
 
-   console.log(`[ElectronCore] Starting app ${appId}`);
+   console.log(`[electron-core] Starting app ${appId}`);
 
    const container = createAppContainer();
 
    // Register modules (sync, before app ready)
    for (const module of modules) {
     try {
-        console.log(`[ElectronCore] Registering module: ${module.constructor.name}`);
+        console.log(`[electron-core] Registering module: ${module.constructor.name}`);
         module.register(container);
     } catch (error) {
-        console.error(`[ElectronCore] Failed to register module: ${module.constructor.name}`, error);
+        console.error(`[electron-core] Failed to register module: ${module.constructor.name}`, error);
         throw error;
     }
    }
@@ -30,13 +30,13 @@ export async function createElectronApp(options: CreateAppOptions) {
 
    // Wait for app ready
    await app.whenReady();
-   console.log(`[ElectronCore] App ready`);
+   console.log(`[electron-core] App ready`);
 
    // Start modules (async, after app ready)
    try {
     await startModules(modules);
    } catch (error) {
-    console.error(`[ElectronCore] Failed to start modules`, error);
+    console.error(`[electron-core] Failed to start modules`, error);
     app.exit(1);
    }
 };
