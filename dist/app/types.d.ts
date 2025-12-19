@@ -2,7 +2,6 @@ import { Container } from 'inversify';
 
 export type AppContainer = Container;
 export interface AppModule {
-    identifier: string;
     /**
      * Register dependencies & handler
      * Called before Electron app ready

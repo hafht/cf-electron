@@ -10,6 +10,6 @@
         // .git
         ".git": true,
         // .gitignore
-        ".gitignore": true,
+        ".gitignore": false,
     }
 }

@@ -24,18 +24,18 @@
   "publishConfig": {
     "access": "restricted"
   },
- 
   "dependencies": {
     "inversify": "^6.0.2",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "vite": "^7.2.6",
-    "vite-plugin-dts": "^3.9.0",
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
+    "electron-updater": "^6.3.9",
     "electron-vite": "^5.0.0",
-    "electron-updater": "^6.3.9"
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vite-plugin-dts": "^3.9.0"
   }
 }
