@@ -1,5 +1,5 @@
 import {app} from 'electron';
-import { AppModule } from './types';
+import { AppModule } from './coreTypes';
 
 export async function startModules(modules: AppModule[]) {
     for (const module of modules) {

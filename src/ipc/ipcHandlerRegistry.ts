@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import type { IpcChannel } from './ipcTypes';
+import type { IpcChannel } from './ipcChannels';
 
 type IpcHandler = (...args: any[]) => Promise<any>;
 

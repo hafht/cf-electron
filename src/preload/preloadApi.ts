@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { IPC_CHANNELS } from '../ipc/ipcTypes';
+import { IPC_CHANNELS } from '../ipc/ipcChannels';
 
 export const api = {
   app: {

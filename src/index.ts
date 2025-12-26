@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 
 // app
-export { createElectronApp } from './app/createElectronApp';
-export type { CreateAppOptions, AppModule, AppContainer } from './app/types';
+export { createElectronApp } from './core/createElectronApp';
+export type { CreateAppOptions, AppModule, AppContainer } from './core/coreTypes';
 
 // ipc
-export { IpcModule } from './ipc/ipcModule';
-export { IPC_CHANNELS } from './ipc/ipcTypes';
+export { IpcMainModule } from './ipc/ipcMainModule';
+export { IPC_CHANNELS } from './ipc/ipcChannels';
 
 // config
-export { ConfigModule } from './config/configModule';
-export type { AppConfigInput } from './config/configTypes';
+export { AppConfigModule } from './config/appConfigModule';
+export type { AppConfigInput } from './config/appConfigTypes';

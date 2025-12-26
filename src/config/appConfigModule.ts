@@ -1,9 +1,9 @@
 import { ZodError, z } from 'zod';
-import type { AppModule, AppContainer } from '../app/types';
-import type { AppConfigInput } from './configTypes';
-import { DefaultConfigService } from './configService';
+import type { AppModule, AppContainer } from '../core/coreTypes';
+import type { AppConfigInput } from './appConfigTypes';
+import { AppConfigServiceImpl } from './appConfigService';
 
-export class ConfigModule<T> implements AppModule {
+export class AppConfigModule<T> implements AppModule {
   constructor(private readonly input: AppConfigInput<T>) {}
 
   register(container: AppContainer) {
@@ -13,8 +13,8 @@ export class ConfigModule<T> implements AppModule {
       const parsed = schema.parse(value);
       console.log('[config] parsed config', parsed);
       container
-        .bind(DefaultConfigService)
-        .toConstantValue(new DefaultConfigService(parsed as Readonly<T>));
+        .bind(AppConfigServiceImpl)
+        .toConstantValue(new AppConfigServiceImpl(parsed as Readonly<T>));
     } catch (err) {
       if (err instanceof ZodError) {
         console.error('[config] invalid config', z.treeifyError(err));

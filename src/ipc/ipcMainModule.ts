@@ -1,9 +1,9 @@
-import type { AppModule, AppContainer } from '../app/types';
-import { IpcRegistry } from './ipcRegistry';
-import { IPC_CHANNELS } from './ipcTypes';
+import type { AppModule, AppContainer } from '../core/coreTypes';
+import { IpcRegistry } from './ipcHandlerRegistry';
+import { IPC_CHANNELS } from './ipcChannels';
 import { app } from 'electron';
 
-export class IpcModule implements AppModule {
+export class IpcMainModule implements AppModule {
   private registry = new IpcRegistry();
 
   register(_: AppContainer) {

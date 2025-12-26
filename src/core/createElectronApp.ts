@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import { createAppContainer } from '../di/container';
-import { setupAppLifecycle, startModules } from './lifecycle';
-import { CreateAppOptions } from './types';
+import { setupAppLifecycle, startModules } from './appLifecycle';
+import { CreateAppOptions } from './coreTypes';
 
 
 export async function createElectronApp(options: CreateAppOptions) {

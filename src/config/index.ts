@@ -1,3 +1,3 @@
-export * from './configTypes';
-export * from './configService';
-export { ConfigModule } from './configModule';
+export * from './appConfigTypes';
+export * from './appConfigService';
+export { AppConfigModule } from './appConfigModule';

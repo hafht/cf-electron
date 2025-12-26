@@ -1,8 +1,8 @@
-export interface ConfigService<T> {
+export interface AppConfigService<T> {
     get(): Readonly<T>;
 }
 
-export class DefaultConfigService<T> implements ConfigService<T> {
+export class AppConfigServiceImpl<T> implements AppConfigService<T> {
 
     constructor(private readonly config: Readonly<T>) {
     }
