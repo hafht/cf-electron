@@ -20,6 +20,11 @@ export async function stopModules(modules: AppModule[]) {
     }
 };
 
+/**
+ * Setup app lifecycle hooks
+ * @param modules - The modules to setup lifecycle hooks for
+ * @description - Setup app lifecycle hooks for the given modules. Stop modules in reverse order before app quit.    
+ */
 export function setupAppLifecycle(modules: AppModule[]) {
    app.on('before-quit', async (event) => {
     console.log(`[electron-core] App before quit`);
