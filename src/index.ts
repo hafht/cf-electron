@@ -11,3 +11,7 @@ export { IPC_CHANNELS } from './ipc/ipcChannels';
 // config
 export { AppConfigModule } from './config/appConfigModule';
 export type { AppConfigInput } from './config/appConfigTypes';
+
+
+// window
+export * from './window';
