@@ -1,0 +1,21 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "pnpm run gen:api && vitepress build",
+    "preview": "vitepress preview",
+    "gen:api": "typedoc"
+  },
+  "dependencies": {
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.0.0",
+    "typescript": "^5.9.3"
+  }
+}
+

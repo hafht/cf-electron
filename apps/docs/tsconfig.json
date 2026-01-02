@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true
+  },
+  "include": ["../../packages/core/src/**/*"],
+  "exclude": ["node_modules", "../../node_modules"]
+}
+

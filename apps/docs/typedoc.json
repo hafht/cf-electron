@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../../packages/core/src/index.ts"],
+  "out": "./api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "name": "CF Electron Framework",
+  "hideBreadcrumbs": true,
+  "readme": "none",
+  "gitRevision": "main",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "entryPointStrategy": "resolve",
+  "tsconfig": "./tsconfig.json",
+  "skipErrorChecking": true
+}
+
