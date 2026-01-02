@@ -9,7 +9,8 @@
     "build:watch": "vite build --watch",
     "prepublishOnly": "pnpm build",
     "link": "node scripts/link-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron",
-    "unlink": "node scripts/unlink-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron"
+    "unlink": "node scripts/unlink-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron",
+    "zip": "node scripts/zip-source.mjs"
   },
   "files": [
     "dist",
@@ -30,6 +31,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
     "electron-updater": "^6.3.9",
