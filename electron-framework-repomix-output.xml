@@ -1,0 +1,2679 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+docs/
+  MODULE-0.1-NOTES.md
+  MODULE-1.1-INSTRUCTION.md
+  MODULE-1.2-INSTRUCTION.md
+  MODULE-1.3-WINDOW-INSTRUCTIONS.md
+  OVERVIEW.md
+  PRELOAD-SECURITY-CHECKLIST.md
+  README.md
+scripts/
+  link-cf-electron.mjs
+  unlink-cf-electron.mjs
+  zip-source.mjs
+src/
+  config/
+    appConfigModule.ts
+    appConfigService.ts
+    appConfigTypes.ts
+    index.ts
+  core/
+    appLifecycle.ts
+    coreTypes.ts
+    createElectronApp.ts
+  di/
+    container.ts
+  ipc/
+    ipcChannels.ts
+    ipcHandlerRegistry.ts
+    ipcMainModule.ts
+  preload/
+    preloadApi.ts
+    preloadEntry.ts
+  window/
+    index.ts
+    windowMainModule.ts
+    windowTypes.ts
+  index.ts
+.cursorrules
+.gitignore
+NAMING-CONVENTIONS.md
+package.json
+SESSION-CONTEXT-SUMMARY.md
+tsconfig.json
+vite.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="docs/MODULE-0.1-NOTES.md">
+📘 MODULE 0.1 – App Bootstrap & Lifecycle
+
+Package: @creative-force/electron-core
+Status: ✅ DONE (Foundation)
+Purpose: Xương sống cho toàn bộ Electron Framework
+
+1️⃣ Mục tiêu Module 0.1 (đã đạt)
+
+Module 0.1 chịu trách nhiệm DUY NHẤT cho:
+
+Khởi tạo Electron app
+
+Chuẩn hóa lifecycle
+
+Điều phối module
+
+Cung cấp DI container cho app & module
+
+Sau Module 0.1, app không còn trực tiếp quản lý Electron lifecycle.
+
+2️⃣ Những gì ĐÃ LÀM (In Scope)
+2.1 Public API (Freeze v1)
+createElectronApp(options: CreateElectronAppOptions): Promise<void>
+
+
+appId bắt buộc
+
+modules optional
+
+Chỉ có 1 entry point duy nhất
+
+2.2 Module Contract
+export interface ElectronModule {
+  register(container: AppContainer): void;
+  start?(): Promise<void>;
+  stop?(): Promise<void>;
+}
+
+
+register() chạy sync, trước app.whenReady
+
+start() chạy sau whenReady
+
+stop() chạy khi app quit
+
+App không hook Electron event
+
+2.3 Dependency Injection
+
+Framework tạo 1 DI container / app
+
+Container được truyền vào module qua register()
+
+App không import DI library
+
+Framework expose AppContainer type alias
+
+2.4 Electron Lifecycle Handling
+
+Centralized trong electron-core
+
+Handle:
+
+app.whenReady
+
+before-quit
+
+stop() gọi theo thứ tự ngược
+
+Graceful shutdown (no zombie process)
+
+2.5 Error Handling (tối thiểu)
+
+Catch error trong:
+
+register()
+
+start()
+
+stop()
+
+Log rõ module lỗi
+
+Fail fast khi critical
+
+2.6 Logging (tạm thời)
+
+Dùng console
+
+Prefix [electron-core]
+
+Chỉ để debug bootstrap
+
+2.7 Developer Experience
+
+App entry < 20 dòng
+
+Không cần hiểu Electron lifecycle
+
+Module dễ viết, dễ test
+
+AI có thể generate module skeleton đúng chuẩn
+
+3️⃣ Những gì CỐ Ý CHƯA LÀM (Out of Scope)
+
+❌ IPC / Preload
+❌ Window management
+❌ Config loader
+❌ Logger module
+❌ Auth
+❌ External service manager
+❌ Telemetry / analytics
+
+Module 0.1 = xương sống, không phải feature module
+
+4️⃣ Quy ước & Nguyên tắc ĐÃ CHỐT
+4.1 Architectural Rules
+
+App không gọi Electron lifecycle API
+
+Module không hook Electron event
+
+Module không gọi module khác trực tiếp
+
+Không global mutable state
+
+4.2 DI Rules
+
+App không import inversify
+
+Chỉ dùng AppContainer
+
+Framework có quyền đổi DI implementation
+
+5️⃣ Known Limitations (Chấp nhận ở v1)
+
+Logging đơn giản
+
+Chưa có test automation
+
+Chưa support restart module
+
+Chưa có async register
+
+➡ Sẽ xử lý ở module / phase sau
+
+6️⃣ Module Dependency Graph (tạm)
+electron-core (0.1)
+   ↑
+   ├─ electron-ipc (1.1)
+   ├─ electron-config (1.2)
+   ├─ electron-logger (2.1)
+   ├─ electron-service-manager (2.2)
+   └─ electron-auth (3.1)
+
+7️⃣ Các Module TIẾP THEO (Roadmap)
+🔜 Module 1.1 – IPC & Preload Standardization
+
+Priority: HIGH
+
+Typed IPC
+
+Central IPC registry
+
+Single preload API (window.api)
+
+Renderer không import ipcRenderer
+
+🔜 Module 1.2 – Config Management
+
+Priority: HIGH
+
+Config schema
+
+Validate on startup
+
+Immutable config
+
+🔜 Module 2.1 – Logging
+
+Priority: MEDIUM
+
+Central logger
+
+Structured log
+
+Context-based logging
+
+🔜 Module 2.2 – Service / Process Manager
+
+Priority: MEDIUM
+
+Dotnet / exe service lifecycle
+
+Health check
+
+Graceful shutdown
+
+🔜 Module 3.1 – Authentication
+
+Priority: HIGH (Beta App)
+
+OAuth PKCE
+
+External browser
+
+Token management
+
+8️⃣ Instruction cho bước tiếp theo
+BẮT ĐẦU MODULE 1.1 KHI:
+
+Module 0.1 đã được:
+
+chạy trong integration app
+
+review & approve
+
+App side đã quen với ElectronModule contract
+
+KHÔNG bắt đầu module mới khi:
+
+Module trước chưa dùng thực tế
+
+API chưa ổn định
+
+DX chưa được validate
+
+9️⃣ Guiding Principle (NHẮC LẠI)
+
+Framework thành công khi app dev không phải suy nghĩ về framework
+
+📌 File này là reference – không sửa tùy tiện
+📌 Mọi breaking change phải bump MAJOR
+</file>
+
+<file path="docs/MODULE-1.1-INSTRUCTION.md">
+📘 MODULE-1.1-INSTRUCTIONS.md
+
+Module: IPC & Preload Standardization
+Depends on: Module 0.1
+Priority: HIGH
+
+Check `PRELOAD-SECURITY-CHECKLIST.md` để biết rules khi làm việc với preload.
+
+1. Mục tiêu Module 1.1
+
+Chuẩn hóa cách giao tiếp giữa Renderer ↔ Main bằng IPC, với các yêu cầu:
+
+Secure
+
+Typed
+
+Consistent
+
+Dễ debug
+
+Dễ mở rộng
+
+IPC được xem là Public API của Desktop App.
+
+2. Problem cần giải quyết
+
+Hiện tại (trong các app cũ):
+
+IPC string rải rác
+
+Không có contract rõ ràng
+
+Renderer gọi ipcRenderer trực tiếp
+
+Preload expose tuỳ tiện
+
+Khó refactor, dễ bug ngầm
+
+3. Nguyên tắc thiết kế (BẮT BUỘC)
+3.1 IPC là contract, không phải implementation
+
+IPC channel = API name
+
+Không thay đổi tuỳ tiện
+
+Breaking IPC = bump major
+
+3.2 Renderer KHÔNG biết Electron
+
+Renderer:
+
+window.api.auth.login()
+
+
+Renderer:
+❌ không import ipcRenderer
+❌ không import electron
+
+3.3 Preload là boundary duy nhất
+
+Toàn bộ IPC phải đi qua preload
+
+Preload expose 1 object duy nhất
+
+4. Scope Module 1.1
+In scope
+
+IPC registry
+
+Typed IPC
+
+Preload expose API
+
+IPC handler lifecycle
+
+Out of scope
+
+Business logic
+
+Auth flow
+
+Permission system phức tạp
+
+5. API shape (freeze v1 – proposal)
+Preload API
+window.api = {
+  app: {
+    getVersion(): Promise<string>;
+  },
+  auth: {
+    login(): Promise<void>;
+    logout(): Promise<void>;
+  }
+};
+
+
+Đây chỉ là ví dụ – structure phải domain-based
+
+6. Kiến trúc đề xuất
+Renderer
+  ↓ (window.api)
+Preload
+  ↓ (ipcRenderer.invoke)
+IPC Registry (Main)
+  ↓
+Module Handler
+
+7. Các thành phần cần xây dựng
+7.1 IPC Registry (Main)
+
+Trách nhiệm
+
+Central register IPC channels
+
+Bind handler với module
+
+Log & catch error
+
+Instruction
+
+Không đăng ký IPC trực tiếp trong module
+
+Mọi IPC đi qua registry
+
+7.2 IPC Handler Interface
+export interface IpcHandler {
+  register(): void;
+}
+
+
+Module có thể cung cấp nhiều handler
+
+Handler không chứa business logic nặng
+
+7.3 Preload Exposer
+
+Trách nhiệm
+
+Expose API an toàn
+
+Không leak Electron API
+
+Validate input (basic)
+
+8. Thứ tự implement (BẮT BUỘC)
+
+Define IPC naming convention
+
+Build IPC registry (main)
+
+Build preload API shape
+
+Connect preload ↔ registry
+
+Example IPC: app.getVersion
+
+Write doc + example usage
+
+9. Definition of Done (DoD)
+
+Module 1.1 được coi là DONE khi:
+
+ Renderer không import Electron
+
+ Preload expose 1 API duy nhất
+
+ IPC channel centralized
+
+ Có example IPC end-to-end
+
+ Có documentation
+
+ Có app demo chạy thật
+
+10. Những điều CẤM làm
+
+❌ IPC string rải rác
+
+❌ Renderer gọi ipcRenderer
+
+❌ Preload expose raw Electron API
+
+❌ Business logic trong IPC handler
+
+11. Output mong đợi
+
+Sau Module 1.1:
+
+Framework có communication backbone
+
+Module sau (Auth, Service Manager) có thể build clean
+
+App dev viết IPC không sợ vỡ
+
+12. Note cho AI / Contributor
+
+Nếu generate code:
+
+Luôn theo naming convention
+
+Không tự ý thêm feature ngoài scope
+
+Ưu tiên clarity hơn cleverness
+
+13. Next Modules (Preview)
+
+Module 1.2 – Config Management
+
+Module 2.1 – Logging
+
+Module 2.2 – Service Manager
+
+📌 File này là instruction, không phải discussion
+📌 Mọi thay đổi phải có lý do & review
+</file>
+
+<file path="docs/MODULE-1.2-INSTRUCTION.md">
+📘 MODULE-1.2-INSTRUCTIONS.md
+
+Module: Configuration Management
+Depends on:
+
+Module 0.1 (App Bootstrap)
+
+Module 1.1 (IPC – request/response)
+
+1️⃣ Mục tiêu Module 1.2
+
+Chuẩn hóa cách define – load – validate – consume config cho desktop app.
+
+Config phải:
+
+Có schema
+
+Validate khi app start
+
+Read-only
+
+Consistent giữa các app
+
+2️⃣ Problem hiện tại (từ app cũ)
+
+Config nằm rải rác:
+
+env
+
+json
+
+global variable
+
+Không có schema
+
+Sai config → lỗi runtime muộn
+
+Mỗi app xử lý config khác nhau
+
+3️⃣ Nguyên tắc thiết kế (BẮT BUỘC)
+3.1 Config là input của app, không phải state
+
+Config:
+
+read-only
+
+không mutate
+
+Không store token / runtime data
+
+3.2 Fail fast
+
+Config sai → app không start
+
+Không:
+
+fallback ngầm
+
+default magic
+
+3.3 Config phải typed
+
+Không any
+
+Không string-based access
+
+4️⃣ Scope Module 1.2
+In scope
+
+Config schema
+
+Load config (env + file)
+
+Validate on startup
+
+Expose config qua DI
+
+Out of scope
+
+Secret management phức tạp
+
+Dynamic config reload
+
+Feature flag system
+
+5️⃣ Kiến trúc đề xuất (high-level)
+Config Schema
+   ↓
+Config Loader
+   ↓
+Validation
+   ↓
+AppContainer (DI)
+   ↓
+Modules consume config
+
+6️⃣ API Shape (proposal – freeze v1)
+6.1 Config schema (app-defined)
+export interface AppConfig {
+  env: 'dev' | 'prod';
+  apiBaseUrl: string;
+  enableDebug: boolean;
+}
+
+
+👉 Schema thuộc app, không thuộc framework
+
+6.2 Framework expose Config Service
+export interface ConfigService<T> {
+  get(): Readonly<T>;
+}
+
+7️⃣ App usage (target DX)
+createElectronApp({
+  appId: 'lhapp-beta',
+  config: {
+    env: 'dev',
+    apiBaseUrl: 'https://api.example.com',
+    enableDebug: true
+  },
+  modules: [...]
+});
+
+
+Trong module:
+
+const config = container.get(ConfigService).get();
+
+8️⃣ Thứ tự implement Module 1.2
+
+Define ConfigService interface
+
+Build config loader
+
+Validate config at app start
+
+Bind config vào DI container
+
+Write minimal doc + example
+
+9️⃣ Những điều CẤM làm
+
+❌ Global process.env access trong module
+❌ Mutate config
+❌ Config nằm rải rác
+❌ Silent default
+
+10️⃣ Definition of Done – Module 1.2
+
+ App không start nếu config sai
+
+ Config typed end-to-end
+
+ Module access config qua DI
+
+ Không module nào đọc process.env trực tiếp
+
+ Có doc & example
+</file>
+
+<file path="docs/MODULE-1.3-WINDOW-INSTRUCTIONS.md">
+# MODULE-1.3-WINDOW-INSTRUCTIONS.md
+
+## Module: Window (Main Process)
+**Phase:** 1 – Communication & Control  
+**Depends on:**  
+- Module 0.1 – App Bootstrap  
+- Module 1.1 – IPC (Request/Response)  
+- Module 1.2 – Configuration Management  
+
+---
+
+## 1. Purpose
+
+The Window module is responsible for creating and managing the Electron `BrowserWindow`.
+
+This module enables the application to:
+- Run end-to-end (main → preload → renderer)
+- Standardize window creation
+- Enforce a secure baseline
+- Remain minimal and extensible
+
+> The Window module is infrastructure, not business logic.
+
+---
+
+## 2. Scope
+
+### In Scope
+- Create a single main `BrowserWindow`
+- Attach preload script
+- Load renderer (development / production)
+- Handle window lifecycle (create / destroy)
+
+### Out of Scope
+- Multi-window management
+- Window registry
+- Menu / Tray
+- Shortcuts
+- Window state persistence
+- Business IPC logic
+
+---
+
+## 3. Design Principles
+
+### 3.1 Infrastructure Only
+- No business logic
+- No renderer framework knowledge (Angular / React / etc.)
+- No IPC handlers
+
+### 3.2 App-Owned Renderer Entry
+- Framework does not hardcode URLs or file paths
+- App decides dev/prod renderer entry
+
+### 3.3 Security First
+All windows created by this module MUST:
+- Use `contextIsolation: true`
+- Disable `nodeIntegration`
+- Enable `sandbox`
+- Avoid exposing Electron APIs to renderer
+
+---
+
+## 4. Public API
+
+### 4.1 WindowOptions
+
+```ts
+export interface WindowOptions {
+  preloadPath: string;
+
+  load: {
+    devUrl?: string;
+    prodFile?: string;
+  };
+
+  browserWindow?: Electron.BrowserWindowConstructorOptions;
+}
+```
+
+---
+
+### 4.2 WindowMainModule
+
+```ts
+new WindowMainModule(options: WindowOptions)
+```
+
+Implements the `ElectronModule` interface and participates in the app lifecycle.
+
+---
+
+## 5. Lifecycle
+
+```
+createElectronApp()
+   ↓
+app.whenReady()
+   ↓
+WindowMainModule.start()
+   ↓
+BrowserWindow created
+   ↓
+preload attached
+   ↓
+renderer loaded
+```
+
+---
+
+## 6. Usage Example (App Side)
+
+```ts
+import { createElectronApp } from '@creative-force/electron-core';
+import { WindowMainModule } from '@creative-force/electron-window';
+import { ConfigModule } from '@creative-force/electron-config';
+import { z } from 'zod';
+
+const AppConfigSchema = z.object({
+  env: z.enum(['dev', 'prod'])
+});
+
+const isDev = process.env.NODE_ENV === 'development';
+
+createElectronApp({
+  appId: 'cf-window-demo',
+  modules: [
+    new ConfigModule({
+      schema: AppConfigSchema,
+      value: { env: isDev ? 'dev' : 'prod' }
+    }),
+
+    new WindowMainModule({
+      preloadPath: require.resolve('../preload/preloadEntry.js'),
+      load: {
+        devUrl: isDev ? 'http://localhost:5173' : undefined,
+        prodFile: !isDev
+          ? require.resolve('../renderer/index.html')
+          : undefined
+      }
+    })
+  ]
+});
+```
+
+---
+
+## 7. Preload Example
+
+```ts
+import { contextBridge } from 'electron';
+
+contextBridge.exposeInMainWorld('api', {
+  ping: () => 'pong'
+});
+```
+
+---
+
+## 8. Renderer Test
+
+```ts
+console.log(window.api.ping());
+```
+
+---
+
+## 9. Security Checklist
+
+- ✓ contextIsolation enabled
+- ✓ nodeIntegration disabled
+- ✓ sandbox enabled
+- ✓ No Electron APIs exposed
+- ✓ Window destroyed on shutdown
+
+---
+
+## 10. Anti-patterns
+
+- Creating BrowserWindow outside Window module
+- Hardcoding renderer URLs in framework
+- Exposing Electron APIs in preload
+- Business logic inside Window module
+
+---
+
+## 11. Definition of Done
+
+- App runs in dev and prod
+- Preload executes correctly
+- Renderer isolated from Electron
+- Naming conventions followed
+- No unnecessary abstraction
+
+---
+
+## Guiding Principle
+
+> Window is infrastructure, not business.
+</file>
+
+<file path="docs/OVERVIEW.md">
+1. Mục tiêu của CF-ELECTRON
+
+CF-ELECTRON là internal Electron framework dùng làm basement cho các desktop app của team.
+
+Framework này:
+
+Chuẩn hóa Electron main process
+
+Chuẩn hóa cách module hoạt động
+
+Giảm duplicate code giữa nhiều app
+
+Tăng tốc phát triển & debug
+
+Là nền tảng cho các module business phía sau
+
+CF-ELECTRON KHÔNG phải app, KHÔNG có UI, KHÔNG xử lý business trực tiếp.
+
+2. Nguyên tắc kiến trúc (đã chốt)
+
+Framework ≠ App
+
+App chỉ:
+
+compose module
+
+define business
+
+Framework:
+
+quản lý lifecycle
+
+cung cấp hạ tầng
+
+Boundary rõ ràng:
+
+App không gọi Electron lifecycle
+
+App không biết framework dùng DI gì
+
+Renderer không import Electron API
+
+3. Cấu trúc thư mục hiện tại
+cf-electron/
+├─ src/                    # Source code (TypeScript)
+│  ├─ app/                 # App bootstrap & lifecycle
+│  │  ├─ createElectronApp.ts
+│  │  ├─ lifecycle.ts
+│  │  └─ types.ts
+│  │
+│  ├─ di/                  # Dependency Injection
+│  │  └─ container.ts
+│  │
+│  └─ index.ts             # Public entry
+│
+├─ dist/                   # Build output (CJS + d.ts)
+│
+├─ docs/                   # Documentation
+│  ├─ MODULE-0.1-NOTES.md
+│  └─ MODULE-1.1-INSTRUCTIONS.md
+│
+├─ scripts/                # Dev scripts (symlink, tooling)
+├─ package.json
+├─ tsconfig.json
+└─ vite.config.ts
+
+4. Cách framework hoạt động (high-level)
+App start
+  ↓
+createElectronApp()
+  ↓
+Create DI container
+  ↓
+Module.register()
+  ↓
+Electron app.whenReady()
+  ↓
+Module.start()
+  ↓
+App running
+  ↓
+App quit
+  ↓
+Module.stop()
+
+
+Framework điều phối tất cả, app chỉ khai báo module.
+
+5. Trạng thái hiện tại
+✅ Hoàn thành
+
+Module 0.1 – App Bootstrap & Lifecycle
+
+⏭️ Tiếp theo
+
+Module 1.1 – IPC & Preload Standardization
+
+6. Cách dev tiếp theo nên làm
+
+Không sửa Module 0.1 trừ khi cần thiết
+
+Bắt đầu Module 1.1 theo instruction
+
+Viết docs song song với code
+
+Module mới phải:
+
+dùng được ngay
+
+có example
+
+không phá DX
+
+7. Guiding Principle
+
+Framework thành công khi app dev không cần hiểu framework internals
+</file>
+
+<file path="docs/PRELOAD-SECURITY-CHECKLIST.md">
+🔐 PRELOAD SECURITY CHECKLIST
+
+Scope: Electron Preload (Framework)
+Applies to: All desktop apps using CF-ELECTRON
+Priority: CRITICAL
+
+0️⃣ Mục tiêu của Preload
+
+Preload là security boundary giữa:
+
+Untrusted Renderer (web-like)
+
+Trusted Main Process (Node / OS access)
+
+❗ Nếu preload sai → app mất toàn bộ security guarantee.
+
+1️⃣ Nguyên tắc cốt lõi (MUST UNDERSTAND)
+
+Renderer = untrusted
+
+Preload = gatekeeper
+
+Main = privileged
+
+👉 Renderer KHÔNG được:
+
+Access Node.js API
+
+Access Electron API
+
+Access OS / filesystem
+
+2️⃣ Electron BrowserWindow Security Flags (BẮT BUỘC)
+☐ 2.1 contextIsolation: true
+new BrowserWindow({
+  webPreferences: {
+    contextIsolation: true
+  }
+});
+
+
+❌ KHÔNG BAO GIỜ:
+
+contextIsolation: false
+
+☐ 2.2 nodeIntegration: false
+nodeIntegration: false
+
+
+❌ Renderer không được dùng Node
+
+☐ 2.3 enableRemoteModule: false
+enableRemoteModule: false
+
+
+❌ remote là legacy + insecure
+
+3️⃣ Preload API Exposure Rules (CỰC KỲ QUAN TRỌNG)
+☐ 3.1 Chỉ expose 1 object duy nhất
+contextBridge.exposeInMainWorld('api', api);
+
+
+❌ KHÔNG:
+
+exposeInMainWorld('fs', fs)
+exposeInMainWorld('electron', electron)
+
+☐ 3.2 Không expose function raw
+
+❌ SAI:
+
+window.api = ipcRenderer.invoke;
+
+
+✅ ĐÚNG:
+
+window.api = {
+  app: {
+    getVersion: () => ipc.invoke('app:getVersion')
+  }
+};
+
+☐ 3.3 API phải domain-based
+window.api = {
+  app: {},
+  auth: {},
+  services: {}
+};
+
+
+❌ Không flat API:
+
+window.api.login()
+
+4️⃣ IPC Channel Security
+☐ 4.1 Không expose channel name trực tiếp
+
+❌ Renderer:
+
+ipcRenderer.invoke('auth:login');
+
+
+✅ Renderer:
+
+window.api.auth.login();
+
+☐ 4.2 IPC channel naming convention
+domain:action
+
+
+Ví dụ:
+
+app:getVersion
+
+auth:login
+
+service:start
+
+☐ 4.3 Không cho renderer subscribe IPC tuỳ ý
+
+❌ KHÔNG expose:
+
+ipcRenderer.on(...)
+
+
+Nếu cần event:
+
+Preload wrap lại
+
+Control event name
+
+5️⃣ Input Validation (Basic nhưng BẮT BUỘC)
+☐ 5.1 Validate input ở preload (basic)
+login(username: string) {
+  if (typeof username !== 'string') {
+    throw new Error('Invalid input');
+  }
+}
+
+
+❌ Không tin renderer
+
+☐ 5.2 Không pass object raw xuống main
+
+❌ SAI:
+
+invoke('task:create', payload);
+
+
+✅ TỐT:
+
+invoke('task:create', {
+  id: payload.id,
+  type: payload.type
+});
+
+6️⃣ Error Handling & Leakage
+☐ 6.1 Không leak error stack OS / Node
+
+❌ KHÔNG:
+
+throw err;
+
+
+✅ NÊN:
+
+throw new Error('Operation failed');
+
+
+(Main process log chi tiết)
+
+☐ 6.2 Promise rejection phải được handle
+return ipc.invoke(...).catch(() => {
+  throw new Error('IPC error');
+});
+
+7️⃣ No Shared Mutable State
+☐ 7.1 Không store state trong preload
+
+❌ KHÔNG:
+
+let token;
+
+
+Preload:
+
+Stateless
+
+Proxy-only
+
+8️⃣ Explicit Allowlist (KHUYẾN NGHỊ)
+☐ 8.1 Chỉ expose API đã định nghĩa
+const api = {
+  app: {...},
+  auth: {...}
+};
+
+
+❌ Không dynamic expose:
+
+api[moduleName] = handler;
+
+9️⃣ Dev vs Prod Behavior
+☐ 9.1 Không relax security vì DEV
+
+❌ KHÔNG:
+
+if (dev) enableNodeIntegration();
+
+
+Security flags phải giống nhau ở DEV & PROD
+
+10️⃣ Testing & Review Checklist
+☐ 10.1 Renderer không access được Node
+typeof require === 'undefined'
+
+☐ 10.2 Renderer không access được Electron
+typeof window.process === 'undefined'
+
+☐ 10.3 Only expected API exists
+Object.keys(window.api)
+
+11️⃣ Anti-patterns (CẤM TUYỆT ĐỐI)
+
+❌ nodeIntegration: true
+❌ contextIsolation: false
+❌ expose ipcRenderer
+❌ expose fs, path, process
+❌ dynamic IPC channel
+❌ preload chứa business logic
+
+12️⃣ Quick Audit Script (Manual)
+
+Trong DevTools (Renderer):
+
+window.require
+window.process
+window.electron
+
+
+👉 Tất cả phải là undefined
+
+13️⃣ Guiding Principle (NHỚ KỸ)
+
+Preload không phải tiện lợi cho dev,
+mà là tuyến phòng thủ cuối cùng cho app
+
+14️⃣ Status & Ownership
+
+Preload security rules freeze từ Module 1.1
+
+Mọi thay đổi:
+
+cần review
+
+cần doc
+
+cần reason rõ ràng
+
+📌 Checklist này dùng cho PR review – không tranh luận trong code
+📌 Nếu nghi ngờ → chọn phương án an toàn hơn
+</file>
+
+<file path="docs/README.md">
+# CF-Electron Framework Documentation
+
+Đây là thư mục chứa tất cả documentation, engineering notes, và instructions cho CF-Electron framework.
+
+## 📚 Tài liệu chính
+
+### [OVERVIEW.md](./OVERVIEW.md)
+**Tài liệu tổng quan về framework**
+
+- Mục tiêu và nguyên tắc kiến trúc
+- Cấu trúc thư mục project
+- Cách framework hoạt động (high-level)
+- Trạng thái hiện tại và roadmap
+- Development guidelines
+
+**Đọc file này trước** khi bắt đầu làm việc với framework hoặc khi cần hiểu tổng quan về kiến trúc.
+
+### [MODULE-0.1-NOTES.md](./MODULE-0.1-NOTES.md)
+**Documentation cho Module 0.1 - App Bootstrap & Lifecycle**
+
+Module này là xương sống của framework, chịu trách nhiệm:
+- Khởi tạo Electron app
+- Chuẩn hóa lifecycle (register → start → stop)
+- Điều phối modules
+- Cung cấp DI container
+
+**Nội dung bao gồm:**
+- Mục tiêu và scope của module
+- Public API và Module Contract
+- Dependency Injection setup
+- Electron lifecycle handling
+- Error handling và logging
+- Known limitations
+- Roadmap cho các module tiếp theo
+
+**Đọc file này** khi:
+- Cần hiểu cách app bootstrap hoạt động
+- Viết module mới cần implement lifecycle
+- Debug issues liên quan đến startup/shutdown
+- Planning module tiếp theo
+
+## 📋 Cấu trúc Documentation
+
+```
+docs/
+├── README.md              # File này - Index của tất cả docs
+├── OVERVIEW.md            # Tổng quan framework
+└── MODULE-*.md            # Documentation cho từng module
+    ├── MODULE-0.1-NOTES.md
+    ├── MODULE-1.1-*.md    # (Sẽ có trong tương lai)
+    └── ...
+```
+
+## 🔍 Cách sử dụng Documentation
+
+### Khi bắt đầu project mới
+1. Đọc `OVERVIEW.md` để hiểu kiến trúc tổng thể
+2. Đọc `MODULE-0.1-NOTES.md` để hiểu lifecycle và cách viết module
+
+### Khi implement feature mới
+1. Kiểm tra `OVERVIEW.md` để đảm bảo không vi phạm nguyên tắc
+2. Đọc documentation của module liên quan
+3. Xem roadmap trong `MODULE-0.1-NOTES.md` để biết module nào đang được plan
+
+### Khi debug hoặc fix bug
+1. Đọc documentation của module có vấn đề
+2. Kiểm tra known limitations
+3. Xem implementation notes trong module docs
+
+## 📝 Quy ước viết Documentation
+
+- **Module docs** (`MODULE-*.md`): Ghi lại implementation notes, design decisions, và instructions cho từng module
+- **Status**: Đánh dấu rõ ràng module đã hoàn thành (✅) hay đang plan (🔜)
+- **Breaking changes**: Phải bump MAJOR version và update docs
+- **File reference**: Không sửa tùy tiện, mọi thay đổi phải có lý do rõ ràng
+
+## 🚀 Module Roadmap
+
+Xem chi tiết trong `MODULE-0.1-NOTES.md` section 7️⃣:
+
+- **Module 1.1** - IPC & Preload Standardization (HIGH priority)
+- **Module 1.2** - Config Management (HIGH priority)
+- **Module 2.1** - Logging (MEDIUM priority)
+- **Module 2.2** - Service/Process Manager (MEDIUM priority)
+- **Module 3.1** - Authentication (HIGH priority for Beta App)
+
+## 💡 Lưu ý
+
+- Tất cả documentation được viết song song với code
+- Documentation là source of truth cho architecture decisions
+- Khi có thay đổi kiến trúc, phải update docs trước hoặc cùng lúc với code
+- AI/Cursor sẽ đọc docs này để hiểu context và đưa ra suggestions phù hợp
+</file>
+
+<file path="scripts/link-cf-electron.mjs">
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
+import { fileURLToPath } from 'url';
+
+function getArg(name) {
+  const index = process.argv.indexOf(name);
+  return index !== -1 ? process.argv[index + 1] : null;
+}
+
+// Get workspace folder (parent directory of scripts folder, which is cf-electron)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frameworkFolder = path.resolve(__dirname, '..'); // This is cf-electron folder
+const workspaceFolder = path.resolve(frameworkFolder, '..'); // This is test/ folder
+
+// Try to get paths from args, env, or use defaults
+let frameworkPath =
+  getArg('--framework') || process.env.CF_ELECTRON_FRAMEWORK;
+let clientPath = getArg('--client') || process.env.CF_ELECTRON_CLIENT;
+
+// Auto-detect default paths if not provided
+if (!frameworkPath) {
+  frameworkPath = frameworkFolder; // Use current cf-electron folder
+  console.log('ℹ️  Using default framework path:', frameworkPath);
+}
+
+if (!clientPath) {
+  clientPath = path.join(workspaceFolder, 'cf-2026');
+  console.log('ℹ️  Using default client path:', clientPath);
+}
+
+// Validate paths exist
+if (!fs.existsSync(frameworkPath)) {
+  console.error(`
+❌ Framework path does not exist: ${frameworkPath}
+
+Usage:
+  node link-cf-electron.mjs --framework /path/to/cf-electron --client /path/to/cf-2026
+
+Or via env:
+  CF_ELECTRON_FRAMEWORK=/path/to/cf-electron
+  CF_ELECTRON_CLIENT=/path/to/cf-2026
+
+Or use default paths in workspace folder:
+  - cf-electron (framework)
+  - cf-2026 (client)
+`);
+  process.exit(1);
+}
+
+if (!fs.existsSync(clientPath)) {
+  console.error(`
+❌ Client path does not exist: ${clientPath}
+
+Usage:
+  node link-cf-electron.mjs --framework /path/to/cf-electron --client /path/to/cf-2026
+
+Or via env:
+  CF_ELECTRON_FRAMEWORK=/path/to/cf-electron
+  CF_ELECTRON_CLIENT=/path/to/cf-2026
+
+Or use default paths in workspace folder:
+  - cf-electron (framework)
+  - cf-2026 (client)
+`);
+  process.exit(1);
+}
+
+const framework = path.resolve(frameworkPath);
+const client = path.resolve(clientPath);
+
+const targetDir = path.join(
+  client,
+  'node_modules',
+  '@creative-force'
+);
+const linkPath = path.join(targetDir, 'electron');
+
+console.log('🔗 Linking @creative-force/electron');
+console.log('Framework:', framework);
+console.log('Client:', client);
+
+fs.mkdirSync(targetDir, { recursive: true });
+
+if (fs.existsSync(linkPath)) {
+  console.log('⚠️ Existing link found. Removing...');
+  fs.rmSync(linkPath, { recursive: true, force: true });
+}
+
+fs.symlinkSync(framework, linkPath, 'dir');
+
+console.log('✅ Symlink created:');
+console.log(linkPath);
+</file>
+
+<file path="scripts/unlink-cf-electron.mjs">
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
+
+function getArg(name) {
+  const index = process.argv.indexOf(name);
+  return index !== -1 ? process.argv[index + 1] : null;
+}
+
+const clientPath =
+  getArg('--client') || process.env.CF_ELECTRON_CLIENT;
+
+if (!clientPath) {
+  console.error(`
+❌ Missing client path.
+
+Usage:
+  node unlink-electron.mjs --client /path/to/electron-vite-angular
+`);
+  process.exit(1);
+}
+
+const client = path.resolve(clientPath);
+const linkPath = path.join(
+  client,
+  'node_modules',
+  '@creative-force',
+  'electron'
+);
+
+console.log('🧹 Removing @creative-force/electron symlink');
+
+if (fs.existsSync(linkPath)) {
+  fs.rmSync(linkPath, { recursive: true, force: true });
+  console.log('✅ Symlink removed');
+} else {
+  console.log('ℹ️ No symlink found');
+}
+</file>
+
+<file path="scripts/zip-source.mjs">
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import archiver from 'archiver';
+
+function getArg(name) {
+  const index = process.argv.indexOf(name);
+  return index !== -1 ? process.argv[index + 1] : null;
+}
+
+// Get project root folder (parent directory of scripts folder)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '..');
+
+// Format date time for filename: YYYYMMDD-HHMMSS
+function formatDateTime() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${year}${month}${day}-${hours}${minutes}${seconds}`;
+}
+
+// Get output path from args or use default
+const customOutput = getArg('--output') || getArg('-o');
+let zipPath;
+
+if (customOutput) {
+  // If custom output is provided, resolve it relative to project root if it's not absolute
+  if (path.isAbsolute(customOutput)) {
+    zipPath = customOutput;
+  } else {
+    zipPath = path.resolve(projectRoot, customOutput);
+  }
+} else {
+  // Default: create zip file in project root
+  zipPath = path.join(projectRoot, `cf-electron-${formatDateTime()}.zip`);
+}
+
+console.log('📦 Creating source code zip...');
+console.log('Project root:', projectRoot);
+console.log('Output file:', zipPath);
+
+// Create output directory if needed
+const outputDir = path.dirname(zipPath);
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+
+// Remove existing zip if exists
+if (fs.existsSync(zipPath)) {
+  console.log('⚠️  Removing existing zip file...');
+  fs.unlinkSync(zipPath);
+}
+
+// Create zip archive
+const output = fs.createWriteStream(zipPath);
+const archive = archiver('zip', {
+  zlib: { level: 9 }, // Maximum compression
+});
+
+output.on('close', () => {
+  const sizeInMB = (archive.pointer() / 1024 / 1024).toFixed(2);
+  console.log('✅ Zip created successfully!');
+  console.log(`📊 Total size: ${sizeInMB} MB`);
+  console.log(`📁 File: ${zipPath}`);
+});
+
+archive.on('error', (err) => {
+  console.error('❌ Error creating zip:', err);
+  process.exit(1);
+});
+
+archive.on('warning', (err) => {
+  if (err.code === 'ENOENT') {
+    console.warn('⚠️  Warning:', err);
+  } else {
+    throw err;
+  }
+});
+
+archive.pipe(output);
+
+// Files and directories to exclude
+const excludeDirs = ['node_modules', 'dist', '.git'];
+const excludeFiles = ['.DS_Store', '.eslintcache'];
+const excludeExtensions = ['.log', '.zip'];
+
+// Function to check if path should be excluded
+function shouldExclude(filePath) {
+  const relativePath = path.relative(projectRoot, filePath);
+  const pathParts = relativePath.split(path.sep);
+  const fileName = path.basename(filePath);
+
+  // Check excluded directories
+  for (const dir of excludeDirs) {
+    if (pathParts.includes(dir)) {
+      return true;
+    }
+  }
+
+  // Check excluded file names
+  for (const file of excludeFiles) {
+    if (fileName === file || relativePath.includes(file)) {
+      return true;
+    }
+  }
+
+  // Check excluded file extensions
+  for (const ext of excludeExtensions) {
+    if (fileName.endsWith(ext) || relativePath.endsWith(ext)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Add files to archive
+function addDirectory(dirPath, archivePath = '') {
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    const relativePath = path.join(archivePath, entry.name);
+
+    // Skip excluded paths
+    if (shouldExclude(fullPath)) {
+      continue;
+    }
+
+    if (entry.isDirectory()) {
+      addDirectory(fullPath, relativePath);
+    } else if (entry.isFile()) {
+      archive.file(fullPath, { name: relativePath });
+    }
+  }
+}
+
+// Start adding files
+addDirectory(projectRoot);
+
+// Finalize the archive
+archive.finalize();
+</file>
+
+<file path="src/config/appConfigModule.ts">
+import { ZodError, z } from 'zod';
+import type { AppModule, AppContainer } from '../core/coreTypes';
+import type { AppConfigInput } from './appConfigTypes';
+import { AppConfigServiceImpl } from './appConfigService';
+
+export class AppConfigModule<T> implements AppModule {
+  constructor(private readonly input: AppConfigInput<T>) {}
+
+  register(container: AppContainer) {
+    const { schema, value } = this.input;
+
+    try {
+      const parsed = schema.parse(value);
+      console.log('[config] parsed config', parsed);
+      container
+        .bind(AppConfigServiceImpl)
+        .toConstantValue(new AppConfigServiceImpl(parsed as Readonly<T>));
+    } catch (err) {
+      if (err instanceof ZodError) {
+        console.error('[config] invalid config', z.treeifyError(err));
+      }
+      throw new Error('Invalid application configuration');
+    }
+  }
+}
+</file>
+
+<file path="src/config/appConfigService.ts">
+export interface AppConfigService<T> {
+    get(): Readonly<T>;
+}
+
+export class AppConfigServiceImpl<T> implements AppConfigService<T> {
+
+    constructor(private readonly config: Readonly<T>) {
+    }
+
+    get(): Readonly<T> {
+        return this.config;
+    }
+}
+</file>
+
+<file path="src/config/appConfigTypes.ts">
+import { ZodType } from 'zod';
+
+export interface AppConfigInput<T> {
+    schema: ZodType<T>;
+    value: unknown;
+}
+</file>
+
+<file path="src/config/index.ts">
+export * from './appConfigTypes';
+export * from './appConfigService';
+export { AppConfigModule } from './appConfigModule';
+</file>
+
+<file path="src/core/appLifecycle.ts">
+import {app} from 'electron';
+import { AppModule } from './coreTypes';
+
+export async function startModules(modules: AppModule[]) {
+    for (const module of modules) {
+        if (module.start) {
+            console.log(`[electron-core] Starting module ${module.constructor.name}`);
+            await module.start();
+        }
+    }
+};
+
+export async function stopModules(modules: AppModule[]) {
+    // reverse order to stop modules
+    for (const module of modules.slice().reverse()) {
+        if (module.stop) {
+            console.log(`[electron-core] Stopping module ${module.constructor.name}`);
+            await module.stop();
+        }
+    }
+};
+
+/**
+ * Setup app lifecycle hooks
+ * @param modules - The modules to setup lifecycle hooks for
+ * @description - Setup app lifecycle hooks for the given modules. Stop modules in reverse order before app quit.    
+ */
+export function setupAppLifecycle(modules: AppModule[]) {
+   app.on('before-quit', async (event) => {
+    console.log(`[electron-core] App before quit`);
+    event.preventDefault();
+    try {
+        await stopModules(modules);
+    } catch (error) {
+        console.error(`[electron-core] Error during shutdown' ${error}`);
+    }
+    finally {
+        console.log(`[electron-core] App quitting`);
+        app.exit(0);
+    }
+   });
+};
+</file>
+
+<file path="src/core/coreTypes.ts">
+import { Container } from "inversify";
+
+export type AppContainer = Container;
+
+export interface AppModule {
+    /**
+     * Register dependencies & handler
+     * Called before Electron app ready
+     */
+    register(container: AppContainer): void;
+    /**
+     * Start the app
+     * Called after Electron app ready
+     */
+    start?(): Promise<void>;
+    /**
+     * Stop the app
+     * Called when app is quitting
+     */
+    stop?(): Promise<void>;
+}
+
+/**
+ * Options for creating an Electron app
+ */
+export interface CreateAppOptions {
+    appId: string;
+    /**
+     * The name of the app (optional). Fallback to appId if not provided
+     * @default undefined
+     */
+    appName?: string;
+    /**
+     * The configuration for the app
+     */
+    config?: unknown;
+    /**
+     * The modules for the app
+     */
+    modules?: AppModule[];
+}
+</file>
+
+<file path="src/core/createElectronApp.ts">
+import { app } from 'electron';
+import { createAppContainer } from '../di/container';
+import { setupAppLifecycle, startModules } from './appLifecycle';
+import { CreateAppOptions } from './coreTypes';
+
+
+export async function createElectronApp(options: CreateAppOptions) {
+   const {appId, modules = []} = options;
+   if (!appId) {
+    throw new Error('[electron-core] appId is required');
+   }
+
+   console.log(`[electron-core] Starting app ${appId}`);
+
+   const container = createAppContainer();
+
+   // Register modules (sync, before app ready)
+   for (const module of modules) {
+    try {
+        console.log(`[electron-core] Registering module: ${module.constructor.name}`);
+        module.register(container);
+    } catch (error) {
+        console.error(`[electron-core] Failed to register module: ${module.constructor.name}`, error);
+        throw error;
+    }
+   }
+
+   // Setup app lifecycle hooks
+   setupAppLifecycle(modules);
+
+   // Wait for app ready
+   await app.whenReady();
+   console.log(`[electron-core] App ready`);
+
+   // Start modules (async, after app ready)
+   try {
+    await startModules(modules);
+   } catch (error) {
+    console.error(`[electron-core] Failed to start modules`, error);
+    app.exit(1);
+   }
+};
+</file>
+
+<file path="src/di/container.ts">
+import { Container } from 'inversify';
+
+let container: Container | null = null;
+
+/**
+ * Create a new app container if not exists
+ * Only one container is allowed per app
+ * Not global mutable outside container
+ * @returns {Container} The app container
+ */
+export function createAppContainer(): Container {
+   if (!container) {
+    container = new Container({
+        defaultScope: 'Singleton',
+        autoBindInjectable: false,
+    });
+   }
+   return container;
+};
+</file>
+
+<file path="src/ipc/ipcChannels.ts">
+// Share across all modules
+
+export type IPCDomain = 'app' 
+
+export const IPC_CHANNELS = {
+    APP_GET_VERSION: 'app:getVersion',
+  } as const;
+  
+  export type IpcChannel =
+    typeof IPC_CHANNELS[keyof typeof IPC_CHANNELS];
+</file>
+
+<file path="src/ipc/ipcHandlerRegistry.ts">
+import { ipcMain } from 'electron';
+import type { IpcChannel } from './ipcChannels';
+
+type IpcHandler = (...args: any[]) => Promise<any>;
+
+export class IpcRegistry {
+    private registered = new Set<IpcChannel>();
+
+    register(channel: IpcChannel, handler: IpcHandler) {
+       if (this.registered.has(channel)) {
+        throw new Error(`[ipc] Channel already registered: ${channel}`);
+       }
+       this.registered.add(channel);
+       ipcMain.handle(channel, async (_event, ...args) => {
+        try {
+            return await handler(...args);
+        } catch (error) {
+            console.error(`[ipc] Handler error: ${channel}`, error);
+            throw new Error('IPC_OPERATION_FAILED');
+        }
+       });
+    }
+
+    clear() {
+        for (const channel of this.registered) {
+            ipcMain.removeHandler(channel);
+        }
+        this.registered.clear();
+    }
+}
+</file>
+
+<file path="src/ipc/ipcMainModule.ts">
+import type { AppModule, AppContainer } from '../core/coreTypes';
+import { IpcRegistry } from './ipcHandlerRegistry';
+import { IPC_CHANNELS } from './ipcChannels';
+import { app } from 'electron';
+
+export class IpcMainModule implements AppModule {
+  private registry = new IpcRegistry();
+
+  register(_: AppContainer) {
+    // register IPC channels 
+    // App domain
+    this.registry.register(
+      IPC_CHANNELS.APP_GET_VERSION,
+      async () => app.getVersion()
+    );
+  }
+
+  async stop() {
+    this.registry.clear();
+  }
+}
+</file>
+
+<file path="src/preload/preloadApi.ts">
+import { ipcRenderer } from 'electron';
+import { IPC_CHANNELS } from '../ipc/ipcChannels';
+
+export const api = {
+  app: {
+    getVersion(): Promise<string> {
+      return ipcRenderer.invoke(IPC_CHANNELS.APP_GET_VERSION);
+    }
+  },
+};
+</file>
+
+<file path="src/preload/preloadEntry.ts">
+import { contextBridge } from 'electron';
+import { api } from './preloadApi';
+
+contextBridge.exposeInMainWorld('api', api);
+</file>
+
+<file path="src/window/index.ts">
+// src/window/index.ts
+export * from './windowTypes';
+export { WindowMainModule } from './windowMainModule';
+</file>
+
+<file path="src/window/windowMainModule.ts">
+// src/window/windowMainModule.ts
+import { BrowserWindow } from 'electron';
+import { join } from 'node:path';
+import type { AppModule, AppContainer } from '../core/coreTypes';
+import type { WindowOptions } from './windowTypes';
+
+export class WindowMainModule implements AppModule {
+  private mainWindow?: BrowserWindow;
+
+  constructor(private readonly options: WindowOptions) {}
+
+  register(_container: AppContainer) {
+    // no-op for now
+  }
+
+  async start() {
+    const {
+      preloadPath,
+      load,
+      browserWindow = {}
+    } = this.options;
+    console.log('[window] starting window', this.options);
+    this.mainWindow = new BrowserWindow({
+      width: 1200,
+      height: 800,
+      show: false,
+      webPreferences: {
+        preload: preloadPath,
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+      },
+      ...browserWindow
+    });
+
+    this.mainWindow.once('ready-to-show', () => {
+      this.mainWindow?.show();
+    });
+
+    if (load.devUrl) {
+      await this.mainWindow.loadURL(load.devUrl);
+    } else if (load.prodFile) {
+      await this.mainWindow.loadFile(load.prodFile);
+    } else {
+      throw new Error('[window] No renderer entry provided');
+    }
+  }
+
+  async stop() {
+    if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+      this.mainWindow.destroy();
+    }
+  }
+}
+</file>
+
+<file path="src/window/windowTypes.ts">
+// src/window/windowTypes.ts
+export interface WindowOptions {
+    preloadPath: string;
+  
+    load: {
+      devUrl?: string;
+      prodFile?: string;
+    };
+  
+    browserWindow?: Electron.BrowserWindowConstructorOptions;
+  }
+</file>
+
+<file path="src/index.ts">
+import 'reflect-metadata';
+
+// app
+export { createElectronApp } from './core/createElectronApp';
+export type { CreateAppOptions, AppModule, AppContainer } from './core/coreTypes';
+
+// ipc
+export { IpcMainModule } from './ipc/ipcMainModule';
+export { IPC_CHANNELS } from './ipc/ipcChannels';
+
+// config
+export { AppConfigModule } from './config/appConfigModule';
+export type { AppConfigInput } from './config/appConfigTypes';
+
+
+// window
+export * from './window';
+</file>
+
+<file path=".cursorrules">
+# CF-Electron Framework - Cursor Instructions
+
+## Project Overview
+This is an internal Electron framework (`@creative-force/electron`) that serves as the foundation for Creative Force desktop applications. It standardizes Electron main process, module lifecycle, and provides dependency injection infrastructure.
+
+## Documentation Location
+All project documentation, engineering notes, and instructions are located in the `docs/` directory:
+
+- `docs/README.md` - **Start here**: Index and guide to all documentation
+- `docs/OVERVIEW.md` - High-level architecture, principles, and project structure
+- `docs/MODULE-*.md` - Module-specific documentation and implementation notes
+  - `docs/MODULE-0.1-NOTES.md` - App Bootstrap & Lifecycle module documentation
+
+**IMPORTANT**: Always read relevant documentation in `docs/` before making changes or answering questions about the framework. Start with `docs/README.md` for an overview of available documentation.
+
+## Key Principles
+1. **Framework ≠ App**: Framework manages lifecycle and infrastructure, apps only compose modules
+2. **Clear Boundaries**: App doesn't call Electron lifecycle directly, doesn't know DI implementation details
+3. **Module-based**: Everything is a module with `register()`, `start()`, and `stop()` lifecycle
+4. **Dependency Injection**: Uses Inversify for DI container
+
+## Architecture
+- **Entry Point**: `src/index.ts` exports `createElectronApp()`
+- **Core**: `src/app/` - App bootstrap, lifecycle management, types
+- **DI**: `src/di/` - Dependency injection container setup
+- **Build**: Vite builds to CommonJS in `dist/`
+
+## Module Lifecycle
+1. `createElectronApp()` is called
+2. DI container is created
+3. All modules call `register(container)` synchronously
+4. Electron `app.whenReady()` fires
+5. All modules call `start()` in order
+6. On quit, modules call `stop()` in reverse order
+
+## Development Guidelines
+- Don't modify completed modules unless necessary
+- Follow module documentation in `docs/` for new features
+- Write docs alongside code
+- New modules must be usable immediately with examples
+- Maintain good DX (Developer Experience)
+
+## When Answering Questions or Making Changes
+1. **First**: Check `docs/README.md` for documentation index and navigation
+2. **Then**: Check `docs/OVERVIEW.md` for architecture context
+3. **Next**: Check relevant `docs/MODULE-*.md` for specific module details
+4. **Finally**: Review source code in `src/` to understand implementation
+
+Always reference documentation when explaining concepts or making architectural decisions.
+</file>
+
+<file path=".gitignore">
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+
+# OS files
+.DS_Store
+
+# Logs
+*.log*
+.eslintcache
+
+# Zip files
+*.zip
+</file>
+
+<file path="NAMING-CONVENTIONS.md">
+# NAMING-CONVENTIONS.md
+
+## Purpose
+This document defines **naming conventions** for the Creative Force Electron Framework.
+The goal is to ensure:
+- Long-term consistency
+- Clear ownership boundaries (framework vs app)
+- No future large-scale renaming
+- Good Developer Experience (DX)
+- Easy onboarding for developers and AI-assisted tooling
+
+These rules are **frozen for v0.x → v1** unless explicitly revised.
+
+---
+
+## 1. General Principles
+
+1. Names must reflect **responsibility**, not implementation.
+2. Names must make **ownership obvious** (framework vs app vs business).
+3. Avoid generic names that become dumping grounds.
+4. Prefer clarity over brevity.
+5. Naming must scale to multi-app, multi-module scenarios.
+
+---
+
+## 2. Package Naming
+
+**Format**
+```
+@creative-force/electron-<domain>
+```
+
+**Examples**
+- @creative-force/electron-core
+- @creative-force/electron-ipc
+- @creative-force/electron-config
+- @creative-force/electron-logger
+- @creative-force/electron-services
+- @creative-force/electron-auth
+
+**Rules**
+- One package = one clear responsibility
+- No mixed domains in a single package
+- Business-specific logic does NOT belong in framework packages
+
+---
+
+## 3. Folder Naming
+
+**Rule**
+- Folder name = **domain or layer (noun)**
+
+**Good**
+- core/
+- ipc/
+- config/
+- preload/
+- window/
+- auth/
+- services/
+- logger/
+
+**Avoid**
+- app/ (ambiguous: framework app vs client app)
+- types/ (too generic)
+- utils/ (only allowed for truly generic helpers)
+
+---
+
+## 4. File Naming
+
+**Rule**
+```
+<responsibility><Context>.ts
+```
+
+Context examples:
+- Module
+- Service
+- Registry
+- Types
+- Entry
+- Api
+
+### Core
+- createElectronApp.ts
+- appLifecycle.ts
+- coreTypes.ts
+
+### IPC
+- ipcChannels.ts
+- ipcHandlerRegistry.ts
+- ipcMainModule.ts
+- ipcContracts.ts (request/response payload types)
+
+### Config
+- appConfigTypes.ts
+- appConfigService.ts
+- appConfigModule.ts
+
+### Preload
+- preloadEntry.ts
+- preloadApi.ts
+- preloadBridge.ts (if needed)
+
+**Index files**
+- index.ts is allowed ONLY to re-export public API
+- index.ts must not contain logic
+
+---
+
+## 5. Class & Interface Naming
+
+### Interfaces
+- Use **role-based naming**
+- Avoid implementation hints
+
+**Examples**
+- ElectronModule
+- AppContainer
+- AppConfigService<T>
+- IpcHandlerRegistry
+
+### Implementations
+- Suffix with Impl or Default
+
+**Examples**
+- AppConfigServiceImpl
+- DefaultAppConfigService
+
+Avoid ambiguous names like:
+- DefaultConfigService
+- BaseService
+
+---
+
+## 6. IPC Channel Naming
+
+**Rule**
+```
+<domain>:<action>
+```
+
+**Examples**
+- app:getVersion
+- auth:login
+- task:downloadResource
+- netcore:startService
+
+**Rules**
+- IPC strings must exist ONLY in ipcChannels.ts
+- No string literals outside IPC contract files
+- Domain represents business/domain, not module name
+- Action is verb-based
+
+---
+
+## 7. Preload API Naming
+
+**Rule**
+```
+window.api.<domain>.<action>()
+```
+
+**Examples**
+- window.api.app.getVersion()
+- window.api.auth.login()
+- window.api.task.downloadResource(taskId)
+
+**Hard rules**
+- Renderer must not import Electron or IPC APIs
+- Preload exposes ONE object: window.api
+- No dynamic channel names
+- No raw ipcRenderer exposure
+
+---
+
+## 8. Config Naming
+
+**Rules**
+- Config is always App-owned
+- Config is read-only
+- Schema name ends with Schema
+
+**Examples**
+- AppConfigSchema
+- AppConfig
+- AppConfigService
+
+Framework must not define business config schemas.
+
+---
+
+## 9. Documentation Naming
+
+**Rule**
+```
+MODULE-<phase>.<index>-<NAME>.md
+```
+
+**Examples**
+- MODULE-0.1-NOTES.md
+- MODULE-1.1-INSTRUCTIONS.md
+- MODULE-1.2-INSTRUCTIONS.md
+
+Always use plural INSTRUCTIONS for consistency.
+
+---
+
+## 10. Anti-patterns (Do Not Use)
+
+- Generic folders like types/ or utils/
+- String literal IPC channels
+- Re-exporting third-party DSLs (e.g., zod)
+- Naming tied to current implementation
+- Abbreviations that reduce clarity
+
+---
+
+## 11. Enforcement
+
+1. PR checklist must include:
+   - Naming conventions followed
+2. Major naming changes require:
+   - Documentation update
+   - Explicit review
+3. Breaking naming changes require MAJOR version bump
+
+---
+
+## 12. Guiding Principle
+
+> **Good naming is part of architecture, not a cosmetic choice.**
+
+If a name is unclear today, it will become technical debt tomorrow.
+</file>
+
+<file path="package.json">
+{
+  "name": "@creative-force/electron",
+  "version": "0.1.0",
+  "private": false,
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "prepublishOnly": "pnpm build",
+    "link": "node scripts/link-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron",
+    "unlink": "node scripts/unlink-cf-electron.mjs --client /Users/haht/Documents/Workspace/cf-2026 --framework /Users/haht/Documents/Workspace/cf-electron",
+    "zip": "node scripts/zip-source.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "dependencies": {
+    "inversify": "^6.0.2",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.3.9",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vite-plugin-dts": "^3.9.0"
+  }
+}
+</file>
+
+<file path="SESSION-CONTEXT-SUMMARY.md">
+# SESSION-CONTEXT-SUMMARY.md
+
+## 1. Vấn đề hiện tại
+
+Team Creative Force đang quản lý **nhiều desktop application (Electron)** độc lập:
+- Kelvin
+- Hue
+- Luma
+- Ink
+
+Các app này:
+- Dùng **cùng tech stack** (Electron + Angular + Node/.NET integration)
+- Có **rất nhiều logic trùng lặp**:
+  - IPC
+  - preload
+  - auth flow
+  - config
+  - service manager
+  - window lifecycle
+- Mỗi app là **repo riêng biệt**, dẫn tới:
+  - Duplicate code
+  - Naming không consistent
+  - Fix bug / update lib phải làm lại nhiều lần
+  - Khó maintain, khó onboard dev mới
+  - Khó đảm bảo security baseline đồng nhất
+
+➡️ Với nguồn lực hiện tại, cách làm này **không scale được**.
+
+---
+
+## 2. Lý do cần Internal Electron Framework
+
+Mục tiêu của việc xây dựng **internal Electron framework**:
+
+### 2.1 Chuẩn hóa (Standardization)
+- Chuẩn hóa:
+  - App lifecycle
+  - IPC & preload
+  - Config management
+  - Window creation
+  - Naming conventions
+- Mọi app đều follow cùng pattern → dễ đọc, dễ debug.
+
+### 2.2 Tái sử dụng (Reuse)
+- Các app dùng chung:
+  - Framework core
+  - Infrastructure modules
+- Business logic nằm ở app hoặc module riêng.
+
+### 2.3 Giảm chi phí phát triển
+- Implement feature 1 lần → dùng cho nhiều app
+- Fix bug / update dependency tập trung
+- Dễ test & rollout
+
+### 2.4 Chuẩn bị cho tương lai
+- Gộp Hue / Luma / Ink thành app beta
+- Dễ mở rộng:
+  - Auth
+  - Logger
+  - Service manager
+  - Background tasks
+- Phù hợp AI-assisted development
+
+---
+
+## 3. Triết lý thiết kế Framework
+
+### 3.1 Framework ≠ App
+- Framework **không chứa business logic**
+- Framework chỉ cung cấp:
+  - Infrastructure
+  - Guardrails
+  - Contracts
+
+### 3.2 Module-based
+- Framework được chia thành **các module độc lập**
+- App compose module theo nhu cầu
+- Không over-engineer
+
+### 3.3 Fail fast & secure by default
+- Config invalid → app không start
+- Preload & IPC theo security checklist
+- Không expose Electron API cho renderer
+
+---
+
+## 4. Tổng quan Structure Framework đã implement
+
+### 4.1 Phase & Module strategy
+
+Framework được xây theo **phase** (không phải semver):
+
+| Phase | Ý nghĩa |
+|-----|--------|
+| 0.x | Foundation |
+| 1.x | Communication & Control |
+| 2.x | Infrastructure |
+| 3.x | Feature foundation |
+
+---
+
+### 4.2 Module đã implement
+
+#### Module 0.1 – App Bootstrap
+**Mục tiêu**
+- Chuẩn hóa lifecycle Electron app
+- DI container
+- Module lifecycle (register / start / stop)
+
+**Thành phần chính**
+- `createElectronApp`
+- `ElectronModule`
+- `AppContainer`
+
+---
+
+#### Module 1.1 – IPC (Request / Response)
+**Mục tiêu**
+- Chuẩn hóa communication giữa main ↔ renderer
+- IPC centralized
+- Không string literal
+
+**Thành phần**
+- IPC channel contracts
+- IPC handler registry
+- Preload API wrapper
+
+---
+
+#### Module 1.2 – Configuration Management
+**Mục tiêu**
+- Typed, validated config
+- Fail fast
+- App-owned schema
+
+**Thành phần**
+- `AppConfigModule`
+- `AppConfigService`
+- Zod-based validation
+- Config injected qua DI
+
+---
+
+#### Module 1.3 – Window
+**Mục tiêu**
+- Tạo BrowserWindow chuẩn
+- Gắn preload
+- Load renderer dev/prod
+- Security baseline
+
+**Thành phần**
+- `WindowMainModule`
+- `WindowOptions`
+- Preload entry & API
+
+---
+
+### 4.3 Naming Conventions
+- Đã freeze naming rules trong `NAMING-CONVENTIONS.md`
+- Áp dụng cho:
+  - Folder
+  - File
+  - Class / interface
+  - IPC channel
+  - Preload API
+  - Documentation
+
+---
+
+## 5. Kết quả hiện tại
+
+Sau Phase 1 (0.1 → 1.3):
+- Framework **đủ để chạy app thật**
+- Có thể build:
+  - App demo
+  - App beta (Auth-only)
+- Kiến trúc rõ ràng, không over-engineer
+- Sẵn sàng mở rộng Phase 2
+
+---
+
+## 6. Hướng tiếp theo (Planned)
+
+### Phase 2 – Infrastructure
+- Logger module
+- Service Manager (netcore services)
+- Background task runner
+
+### Phase 3 – Feature Foundation
+- Auth (OAuth PKCE)
+- Common business modules
+
+### Documentation
+- Build documentation website:
+  - Framework docs
+  - App beta docs
+- Onboarding & reference cho dev
+
+---
+
+## Guiding Principle
+
+> **Standardization reduces cost.  
+> Framework provides guardrails.  
+> Business logic stays in the app.**
+</file>
+
+<file path="tsconfig.json">
+{
+    "compilerOptions": {
+      "target": "ES2020",
+      "module": "commonjs",
+      "declaration": true,
+      "outDir": "dist",
+      "rootDir": "src",
+      "strict": true
+    },
+    "include": ["src"]
+  }
+</file>
+
+<file path="vite.config.ts">
+import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts';
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      formats: ['cjs'],
+      fileName: () => 'index.cjs'
+    },
+    target: 'node18',
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        'electron',
+        'inversify',
+        'reflect-metadata'
+      ]
+    }
+  },
+  plugins: [dts()]
+});
+</file>
+
+</files>

@@ -1,0 +1,745 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+resources/
+  icon.png
+src/
+  main/
+    index.ts
+  preload/
+    index.d.ts
+    index.ts
+  renderer/
+    src/
+      app/
+        app.component.ts
+        project.component.ts
+      main.ts
+      styles.css
+    index.html
+    tsconfig.app.json
+types/
+  analogjs-vite-plugin-angular.d.ts
+.editorconfig
+.gitignore
+.npmrc
+.prettierignore
+.prettierrc.yaml
+Archive.zip
+electron-builder.yml
+electron.vite.config.ts
+eslint.config.mjs
+package.json
+README.md
+tsconfig.json
+tsconfig.node.json
+tsconfig.web.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/main/index.ts">
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { join } from 'path'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import icon from '../../resources/icon.png?asset'
+import { AppConfigModule, createElectronApp, WindowMainModule } from '@creative-force/electron'
+import { z } from 'zod'
+
+const AppConfigSchema = z.object({
+  env: z.enum(['dev', 'prod']),
+  apiBaseUrl: z.string().url(),
+  enableDebug: z.boolean()
+})
+
+
+createElectronApp({
+  appId: 'lhapp-beta',
+  modules: [
+    new AppConfigModule({
+      schema: AppConfigSchema,
+      value: {
+        env: 'dev',
+        apiBaseUrl: 'https://api.example.com',
+        enableDebug: true
+      }
+    }),
+    new WindowMainModule({
+      preloadPath: join(__dirname, '../preload/index.js'),
+      load: {
+        devUrl: is.dev ? 'http://localhost:5173' : undefined,
+        prodFile: !is.dev
+          ? require.resolve('../renderer/index.html')
+          : undefined
+      }
+    })
+  ]
+});
+
+// function createWindow(): void {
+//   // Create the browser window.
+//   const mainWindow = new BrowserWindow({
+//     width: 900,
+//     height: 670,
+//     show: false,
+//     autoHideMenuBar: true,
+//     ...(process.platform === 'linux' ? { icon } : {}),
+//     webPreferences: {
+//       preload: join(__dirname, '../preload/index.js'),
+//       sandbox: false
+//     }
+//   })
+
+//   mainWindow.on('ready-to-show', () => {
+//     mainWindow.show()
+//   })
+
+//   mainWindow.webContents.setWindowOpenHandler((details) => {
+//     shell.openExternal(details.url)
+//     return { action: 'deny' }
+//   })
+
+//   // HMR for renderer base on electron-vite cli.
+//   // Load the remote URL for development or the local html file for production.
+//   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+//     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+//   } else {
+//     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+//   }
+// }
+
+// // This method will be called when Electron has finished
+// // initialization and is ready to create browser windows.
+// // Some APIs can only be used after this event occurs.
+// app.whenReady().then(() => {
+//   // Set app user model id for windows
+//   electronApp.setAppUserModelId('com.electron')
+
+//   // Default open or close DevTools by F12 in development
+//   // and ignore CommandOrControl + R in production.
+//   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+//   app.on('browser-window-created', (_, window) => {
+//     optimizer.watchWindowShortcuts(window)
+//   })
+
+//   // IPC test
+//   ipcMain.on('ping', () => console.log('pong'))
+
+//   createWindow()
+
+//   app.on('activate', function () {
+//     // On macOS it's common to re-create a window in the app when the
+//     // dock icon is clicked and there are no other windows open.
+//     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+//   })
+// })
+
+// // Quit when all windows are closed, except on macOS. There, it's common
+// // for applications and their menu bar to stay active until the user quits
+// // explicitly with Cmd + Q.
+// app.on('window-all-closed', () => {
+//   if (process.platform !== 'darwin') {
+//     app.quit()
+//   }
+// })
+
+// // In this file you can include the rest of your app's specific main process
+// // code. You can also put them in separate files and require them here.
+</file>
+
+<file path="src/preload/index.d.ts">
+declare global {
+  interface Window {
+    electron: Record<string, unknown>
+    api: {
+      ping: () => string
+    }
+  }
+}
+</file>
+
+<file path="src/preload/index.ts">
+import { contextBridge } from 'electron'
+
+// Custom APIs for renderer
+const api = {
+  ping: () => {
+    return 'pong'
+  }
+}
+
+// Minimal electronAPI implementation (empty object since not used in renderer)
+const electronAPI = {}
+
+// Use `contextBridge` APIs to expose Electron APIs to
+// renderer only if context isolation is enabled, otherwise
+// just add to the DOM global.
+if (process.contextIsolated) {
+  try {
+    contextBridge.exposeInMainWorld('electron', electronAPI)
+    contextBridge.exposeInMainWorld('api', api)
+  } catch (error) {
+    console.error(error)
+  }
+} else {
+  // @ts-ignore (define in dts)
+  window.electron = electronAPI
+  // @ts-ignore (define in dts)
+  window.api = api
+}
+</file>
+
+<file path="src/renderer/src/app/app.component.ts">
+import { Component, VERSION } from '@angular/core'
+import { ProjectComponent } from './project.component'
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [ProjectComponent],
+  template: `
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Electron + Angular</p>
+          <h1>Renderer đang chạy</h1>
+          <p class="lede">
+            Angular {{ version }} · chỉnh file trong <code>src/renderer/src/app</code> để
+            thử HMR. Sửa template hoặc styles và quan sát cập nhật nóng.
+          </p>
+          <div class="badges">
+            <span class="badge success">Dev server: 5173</span>
+            <span class="badge">Electron preload/main đã build</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Trạng thái</h2>
+          <ul>
+            <li>Angular {{ version }} (standalone)</li>
+            <li>HMR qua Vite + @analogjs/vite-plugin-angular</li>
+            <li>Electron-Vite dev: main/preload/renderer</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>HMR Demo</h2>
+          <app-project />
+        </article>
+      </section>
+    </main>
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        color: #e6e6e6;
+        background: #0f1115;
+        min-height: 100vh;
+      }
+      .app-shell {
+        padding: 2.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .hero {
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+          radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.12), transparent 35%),
+          rgba(255, 255, 255, 0.03);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+      .eyebrow {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #c7c9d1;
+        margin: 0 0 0.4rem;
+      }
+      h1 {
+        font-size: 2.2rem;
+        margin: 0 0 0.6rem;
+      }
+      .lede {
+        line-height: 1.6;
+        color: #c7c9d1;
+        margin: 0 0 1rem;
+      }
+      code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        color: #f0f0f0;
+      }
+      .badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #dfe2ea;
+        font-size: 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .badge.success {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #9cf0c9;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-top: 1.25rem;
+      }
+      .card {
+        padding: 1.25rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      .card ul {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: #c7c9d1;
+        line-height: 1.6;
+      }
+    `
+  ]
+})
+export class AppComponent {
+  version = VERSION.full
+  ngOnInit(): void {
+    console.log('AppComponent ngOnInit')
+  }
+  ngOnDestroy(): void {
+    console.log('AppComponent ngOnDestroy')
+  }
+}
+</file>
+
+<file path="src/renderer/src/app/project.component.ts">
+import { Component } from '@angular/core'
+
+@Component({
+  selector: 'app-project',
+  standalone: true,
+  template: `
+    <section class="project-card">
+      <h2>HMR Test Component</h2>
+      <p>{{ text }}</p>
+    </section>
+  `,
+  styles: [
+    `
+      .project-card {
+        padding: 1rem 1.25rem;
+        margin-top: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      p {
+        margin: 0;
+        color: #d7d9e0;
+      }
+    `
+  ]
+})
+export class ProjectComponent {
+    text = 'Hehehe 2 2'
+    ngOnInit(): void {
+        console.log('ProjectComponent ngOnInit')
+    }
+    ngOnDestroy(): void {
+        console.log('ProjectComponent ngOnDestroy')
+    }
+}
+</file>
+
+<file path="src/renderer/src/main.ts">
+import { bootstrapApplication } from '@angular/platform-browser'
+import 'zone.js'
+import './styles.css'
+import { AppComponent } from './app/app.component'
+
+bootstrapApplication(AppComponent).catch((error) => {
+  console.error('Failed to bootstrap Angular renderer', error)
+})
+</file>
+
+<file path="src/renderer/src/styles.css">
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0f1115;
+}
+</file>
+
+<file path="src/renderer/index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electron + Angular</title>
+  </head>
+  <body>
+    <app-root></app-root>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+</file>
+
+<file path="src/renderer/tsconfig.app.json">
+{
+  "extends": "../../tsconfig.web.json",
+  "compilerOptions": {
+    "outDir": "../../out/renderer"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.html",
+    "src/**/*.css"
+  ]
+}
+</file>
+
+<file path="types/analogjs-vite-plugin-angular.d.ts">
+declare module '@analogjs/vite-plugin-angular' {
+  import type { PluginOption } from 'vite'
+
+  const angular: (options?: unknown) => PluginOption
+  export default angular
+}
+</file>
+
+<file path=".editorconfig">
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+</file>
+
+<file path=".gitignore">
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+</file>
+
+<file path=".npmrc">
+shamefully-hoist=true
+</file>
+
+<file path=".prettierignore">
+out
+dist
+pnpm-lock.yaml
+LICENSE.md
+tsconfig.json
+tsconfig.*.json
+</file>
+
+<file path=".prettierrc.yaml">
+singleQuote: true
+semi: false
+printWidth: 100
+trailingComma: none
+</file>
+
+<file path="electron-builder.yml">
+appId: com.electron.app
+productName: cf-2026
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+asarUnpack:
+  - resources/**
+win:
+  executableName: cf-2026
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  target:
+    - AppImage
+    - snap
+    - deb
+  maintainer: electronjs.org
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+publish:
+  provider: generic
+  url: https://example.com/auto-updates
+</file>
+
+<file path="electron.vite.config.ts">
+import { defineConfig } from 'electron-vite'
+import angular from '@analogjs/vite-plugin-angular'
+import { resolve } from 'node:path'
+
+export default defineConfig({
+  main: {
+    build: {
+      sourcemap: true,
+      rollupOptions: {
+        // External workspace package - will be resolved at runtime from node_modules
+        external: ['@creative-force/electron']
+      }
+    }
+  },
+  preload: {
+    build: {
+      sourcemap: true
+    }
+  },
+  renderer: {
+    root: 'src/renderer',
+    plugins: [
+      angular({
+        tsconfig: resolve(__dirname, 'src/renderer/tsconfig.app.json')
+      })
+    ],
+    build: {
+      sourcemap: true
+    },
+    server: {
+      port: 5173,
+      strictPort: true,
+      sourcemapIgnoreList: false
+    }
+  }
+})
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig } from 'eslint/config'
+import tseslint from '@electron-toolkit/eslint-config-ts'
+import eslintConfigPrettier from '@electron-toolkit/eslint-config-prettier'
+
+export default defineConfig(
+  { ignores: ['**/node_modules', '**/dist', '**/out'] },
+  tseslint.configs.recommended,
+  eslintConfigPrettier
+)
+</file>
+
+<file path="package.json">
+{
+  "name": "cf-2026",
+  "version": "1.0.0",
+  "description": "A minimal Electron application with TypeScript",
+  "main": "./out/main/index.js",
+  "author": "example.com",
+  "homepage": "https://electron-vite.org",
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint --cache .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux"
+  },
+  "dependencies": {
+    "@angular/common": "21.0.5",
+    "@angular/compiler": "21.0.5",
+    "@angular/core": "21.0.5",
+    "@angular/platform-browser": "21.0.5",
+    "@angular/platform-browser-dynamic": "21.0.5",
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "electron-updater": "^6.3.9",
+    "rxjs": "^7.8.2",
+    "zod": "^4.2.1",
+    "zone.js": "^0.15.1"
+  },
+  "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^2.1.3",
+    "@angular/build": "21.0.3",
+    "@angular/compiler-cli": "21.0.5",
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@types/node": "^22.19.1",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
+  }
+}
+</file>
+
+<file path="README.md">
+# cf-2026
+
+A minimal Electron application with TypeScript
+
+## Recommended IDE Setup
+
+- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+## Project Setup
+
+### Install
+
+```bash
+$ pnpm install
+```
+
+### Development
+
+```bash
+$ pnpm dev
+```
+
+### Build
+
+```bash
+# For windows
+$ pnpm build:win
+
+# For macOS
+$ pnpm build:mac
+
+# For Linux
+$ pnpm build:linux
+```
+</file>
+
+<file path="tsconfig.json">
+{
+  "files": [],
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
+}
+</file>
+
+<file path="tsconfig.node.json">
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "types": ["electron-vite/node"]
+  }
+}
+</file>
+
+<file path="tsconfig.web.json">
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": ["src/renderer/**/*.ts", "src/preload/*.d.ts"],
+  "compilerOptions": {
+    "composite": true
+  }
+}
+</file>
+
+</files>

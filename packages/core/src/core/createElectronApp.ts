@@ -30,7 +30,7 @@ export async function createElectronApp(options: CreateAppOptions) {
 
    // Wait for app ready
    await app.whenReady();
-   console.log(`[electron-core] App ready`);
+   console.log(`[electron-core] App ready v2`);
 
    // Start modules (async, after app ready)
    try {
