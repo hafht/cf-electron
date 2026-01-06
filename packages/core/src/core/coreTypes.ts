@@ -1,8 +1,13 @@
 import { Container } from "inversify";
+import type { IDisposable } from "../common/lifecycle";
 
 export type AppContainer = Container;
 
-export interface AppModule {
+/**
+ * Base interface for all Electron app modules.
+ * Modules must implement the disposable pattern to properly clean up resources.
+ */
+export interface AppModule extends IDisposable {
     /**
      * Register dependencies & handler
      * Called before Electron app ready
@@ -18,6 +23,12 @@ export interface AppModule {
      * Called when app is quitting
      */
     stop?(): Promise<void>;
+    /**
+     * Dispose of resources held by this module.
+     * Called to clean up resources and prevent memory leaks.
+     * Modules should extend the Disposable class (from common/lifecycle) for automatic resource management.
+     */
+    dispose(): void;
 }
 
 /**

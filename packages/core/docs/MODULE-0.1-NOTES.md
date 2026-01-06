@@ -30,10 +30,11 @@ modules optional
 Chỉ có 1 entry point duy nhất
 
 2.2 Module Contract
-export interface ElectronModule {
+export interface AppModule extends IDisposable {
   register(container: AppContainer): void;
   start?(): Promise<void>;
   stop?(): Promise<void>;
+  dispose(): void; // Inherited from IDisposable
 }
 
 
@@ -42,6 +43,10 @@ register() chạy sync, trước app.whenReady
 start() chạy sau whenReady
 
 stop() chạy khi app quit
+
+dispose() được dùng để cleanup resources, có thể được gọi từ stop() hoặc tự động
+
+Modules nên extend class Disposable để quản lý lifecycle và prevent memory leaks
 
 App không hook Electron event
 

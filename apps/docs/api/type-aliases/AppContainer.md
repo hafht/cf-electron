@@ -6,4 +6,4 @@
 
 > **AppContainer** = `Container`
 
-Defined in: [core/coreTypes.ts:3](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L3)
+Defined in: [core/coreTypes.ts:4](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L4)

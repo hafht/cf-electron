@@ -4,7 +4,7 @@
 
 # Interface: CreateAppOptions
 
-Defined in: [core/coreTypes.ts:26](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L26)
+Defined in: [core/coreTypes.ts:37](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L37)
 
 Options for creating an Electron app
 
@@ -14,7 +14,7 @@ Options for creating an Electron app
 
 > **appId**: `string`
 
-Defined in: [core/coreTypes.ts:27](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L27)
+Defined in: [core/coreTypes.ts:38](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L38)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [core/coreTypes.ts:27](https://github.com/hafht/cf-electron/blob/mai
 
 > `optional` **appName**: `string`
 
-Defined in: [core/coreTypes.ts:32](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L32)
+Defined in: [core/coreTypes.ts:43](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L43)
 
 The name of the app (optional). Fallback to appId if not provided
 
@@ -38,7 +38,7 @@ undefined
 
 > `optional` **config**: `unknown`
 
-Defined in: [core/coreTypes.ts:36](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L36)
+Defined in: [core/coreTypes.ts:47](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L47)
 
 The configuration for the app
 
@@ -48,6 +48,6 @@ The configuration for the app
 
 > `optional` **modules**: [`AppModule`](AppModule.md)[]
 
-Defined in: [core/coreTypes.ts:40](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L40)
+Defined in: [core/coreTypes.ts:51](https://github.com/hafht/cf-electron/blob/main/packages/core/src/core/coreTypes.ts#L51)
 
 The modules for the app

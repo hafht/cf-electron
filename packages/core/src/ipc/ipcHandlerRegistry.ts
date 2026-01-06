@@ -1,9 +1,10 @@
 import { ipcMain } from 'electron';
 import type { IpcChannel } from './ipcChannels';
+import type { IDisposable } from '../common/lifecycle';
 
 type IpcHandler = (...args: any[]) => Promise<any>;
 
-export class IpcRegistry {
+export class IpcRegistry implements IDisposable {
     private registered = new Set<IpcChannel>();
 
     register(channel: IpcChannel, handler: IpcHandler) {
@@ -16,7 +17,8 @@ export class IpcRegistry {
             return await handler(...args);
         } catch (error) {
             console.error(`[ipc] Handler error: ${channel}`, error);
-            throw new Error('IPC_OPERATION_FAILED');
+            const isDev = process.env.NODE_ENV === 'development';
+            throw isDev ? error : new Error('IPC_OPERATION_FAILED');
         }
        });
     }
@@ -26,5 +28,9 @@ export class IpcRegistry {
             ipcMain.removeHandler(channel);
         }
         this.registered.clear();
+    }
+
+    dispose(): void {
+        this.clear();
     }
 }

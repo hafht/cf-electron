@@ -2,9 +2,12 @@ import { ZodError, z } from 'zod';
 import type { AppModule, AppContainer } from '../core/coreTypes';
 import type { AppConfigInput } from './appConfigTypes';
 import { AppConfigServiceImpl } from './appConfigService';
+import { Disposable } from '../common/lifecycle';
 
-export class AppConfigModule<T> implements AppModule {
-  constructor(private readonly input: AppConfigInput<T>) {}
+export class AppConfigModule<T> extends Disposable implements AppModule {
+  constructor(private readonly input: AppConfigInput<T>) {
+    super();
+  }
 
   register(container: AppContainer) {
     const { schema, value } = this.input;

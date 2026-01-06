@@ -4,7 +4,14 @@
 
 # Class: WindowMainModule
 
-Defined in: [window/windowMainModule.ts:7](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L7)
+Defined in: [window/windowMainModule.ts:8](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L8)
+
+Base interface for all Electron app modules.
+Modules must implement the disposable pattern to properly clean up resources.
+
+## Extends
+
+- `Disposable`
 
 ## Implements
 
@@ -16,7 +23,7 @@ Defined in: [window/windowMainModule.ts:7](https://github.com/hafht/cf-electron/
 
 > **new WindowMainModule**(`options`): `WindowMainModule`
 
-Defined in: [window/windowMainModule.ts:10](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L10)
+Defined in: [window/windowMainModule.ts:11](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L11)
 
 #### Parameters
 
@@ -28,13 +35,40 @@ Defined in: [window/windowMainModule.ts:10](https://github.com/hafht/cf-electron
 
 `WindowMainModule`
 
+#### Overrides
+
+`Disposable.constructor`
+
 ## Methods
+
+### dispose()
+
+> **dispose**(): `void`
+
+Defined in: [window/windowMainModule.ts:56](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L56)
+
+Dispose of all registered resources.
+Safe to call multiple times - will only dispose once.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+[`AppModule`](../interfaces/AppModule.md).[`dispose`](../interfaces/AppModule.md#dispose)
+
+#### Overrides
+
+`Disposable.dispose`
+
+***
 
 ### register()
 
 > **register**(`_container`): `void`
 
-Defined in: [window/windowMainModule.ts:12](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L12)
+Defined in: [window/windowMainModule.ts:15](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L15)
 
 Register dependencies & handler
 Called before Electron app ready
@@ -59,7 +93,7 @@ Called before Electron app ready
 
 > **start**(): `Promise`\<`void`\>
 
-Defined in: [window/windowMainModule.ts:16](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L16)
+Defined in: [window/windowMainModule.ts:19](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L19)
 
 Start the app
 Called after Electron app ready
@@ -78,7 +112,7 @@ Called after Electron app ready
 
 > **stop**(): `Promise`\<`void`\>
 
-Defined in: [window/windowMainModule.ts:49](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L49)
+Defined in: [window/windowMainModule.ts:52](https://github.com/hafht/cf-electron/blob/main/packages/core/src/window/windowMainModule.ts#L52)
 
 Stop the app
 Called when app is quitting
